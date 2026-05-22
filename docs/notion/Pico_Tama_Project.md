@@ -288,25 +288,6 @@ Maximum is 1310720 bytes.
 - 画像データを圧縮して保存する
 - 未使用の画像やフォントを消す
 
-## GitHubで管理する方法
-
-変更したら、次の順番で保存します。
-
-```bash
-git status
-git add .
-git commit -m "変更内容を書く"
-git push
-```
-
-例:
-
-```bash
-git add .
-git commit -m "Update sleep animation"
-git push
-```
-
 ## Notion自動更新
 
 このMarkdownはNotionページに同期できます。
