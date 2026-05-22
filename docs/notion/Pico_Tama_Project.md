@@ -288,16 +288,7 @@ Maximum is 1310720 bytes.
 - 画像データを圧縮して保存する
 - 未使用の画像やフォントを消す
 
-## Notion自動更新
-
-このMarkdownはNotionページに同期できます。
-
-同期先:
-https://www.notion.so/368c7245a8ab812c9cf8db53bfc1dff0
-
-`main` に push すると、GitHub Actions の `Sync Notion` ワークフローがこのページを更新します。
-
-設定方法は `docs/notion/auto_sync.md` を見てください。
+## Notionでの使い方
 
 おすすめの子ページ:
 
