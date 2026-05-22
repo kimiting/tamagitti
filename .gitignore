@@ -1,0 +1,8 @@
+.DS_Store
+bin/
+sprite_preview/
+*.tmp
+*.log
+.env
+.env.*
+!.env.example
