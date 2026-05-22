@@ -307,9 +307,16 @@ git commit -m "Update sleep animation"
 git push
 ```
 
-## Notionでの使い方
+## Notion自動更新
 
-このページをNotionに貼り付けて、親ページとして使います。
+このMarkdownはNotionページに同期できます。
+
+同期先:
+https://www.notion.so/368c7245a8ab812c9cf8db53bfc1dff0
+
+`main` に push すると、GitHub Actions の `Sync Notion` ワークフローがこのページを更新します。
+
+設定方法は `docs/notion/auto_sync.md` を見てください。
 
 おすすめの子ページ:
 
