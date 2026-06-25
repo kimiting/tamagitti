@@ -1,6 +1,6 @@
 # Pico Tama
 
-XIAO ESP32C6、1.69inch ST7789V2 LCD、土壌水分センサー、照度センサー、タッチセンサーを使うPicoたまごっち風スケッチです。
+XIAO ESP32C6、1.69inch ST7789V2 LCD、土壌水分センサー、照度センサー、タッチセンサー、ポンプリレーを使うPicoたまごっち風スケッチです。
 
 ## 初めて実行する手順
 
@@ -43,6 +43,14 @@ cat_tama
 - `cat_tama.ino`
 - `pico_sprites.h`
 - `images.h`
+
+### 配線
+
+- LCD: `DIN=D10`, `CLK=D8`, `CS=D3`, `DC=D4`, `RST=D5`, `BL=D6`
+- 土壌水分センサー: `A0`
+- 照度センサー: `A2`
+- タッチセンサー: `D1`
+- ポンプリレー: `D7`
 
 ### 5. ボードとポートを選ぶ
 
@@ -195,6 +203,7 @@ arduino-cli monitor -p <PORT> --config baudrate=115200
 ```
 
 画面下にも `S####` の形で土壌センサーの安定値が表示されます。
+シリアルモニタには、乾燥判定時のポンプ状態も `pump=ON/OFF` で表示されます。
 
 ## 状態
 
@@ -220,6 +229,7 @@ arduino-cli monitor -p <PORT> --config baudrate=115200
 - 湿潤状態では元Picoの連続フレームをベースにした、足元に水たまりが出る滑らかな `pico_wet` アニメーションを再生します。
 - タッチ状態では元Picoの連続フレームをベースにした、手を上げて喜ぶ滑らかな `pico_touch` アニメーションを再生します。
 - タッチは一度始まったら、タッチ用モーションを3周再生してから次の状態に戻ります。
+- 土壌が `DRY` になった時だけ、ポンプリレーをONにします。
 
 ## 調整する値
 
@@ -230,4 +240,5 @@ arduino-cli monitor -p <PORT> --config baudrate=115200
 - `SOIL_FILTER_ALPHA`: 土壌センサー値のなめらかさ。小さいほどゆっくり反応
 - `LIGHT_NIGHT_TH`: 夜判定
 - `LIGHT_HYST`: 夜判定の戻り幅
+- `PUMP_RELAY_ACTIVE_HIGH`: リレーがHIGHでONなら `true`、LOWでONなら `false`
 - `ANIM_INTERVAL_MS`: アニメーション速度

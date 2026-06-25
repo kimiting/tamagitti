@@ -5,7 +5,7 @@
  * 夜 / 湿潤 / 普通 / 乾燥 / タッチ
  *
  * LCD:  DIN=D10, CLK=D8, CS=D3, DC=D4, RST=D5, BL=D6
- * Soil: A0, Light: A2, Touch: D1
+ * Soil: A0, Light: A2, Touch: D1, Pump relay: D7
  */
 
 #include <Arduino.h>
@@ -17,6 +17,7 @@
 #define SOIL_PIN A0
 #define LIGHT_PIN A2
 #define TOUCH_PIN D1
+#define PUMP_RELAY_PIN D7
 
 #define LCD_DIN D10
 #define LCD_CLK D8
@@ -32,6 +33,7 @@ constexpr bool SOIL_DRY_IS_HIGH = true;
 constexpr float SOIL_FILTER_ALPHA = 0.18f;
 constexpr int LIGHT_NIGHT_TH = 300;
 constexpr int LIGHT_HYST = 120;
+constexpr bool PUMP_RELAY_ACTIVE_HIGH = true;
 
 constexpr unsigned long SENSOR_INTERVAL_MS = 90;
 constexpr unsigned long ANIM_INTERVAL_MS = 180;
@@ -68,6 +70,7 @@ bool nightMode = false;
 bool touchWasHigh = false;
 bool touchLocked = false;
 uint8_t touchLoopsRemaining = 0;
+bool pumpEnabled = false;
 
 PicoMode currentMode = MODE_NORMAL;
 PicoMode targetMode = MODE_NORMAL;
@@ -287,6 +290,15 @@ void updateSoilMode(int raw) {
   }
 }
 
+void setPumpEnabled(bool enabled) {
+  if (pumpEnabled == enabled) {
+    return;
+  }
+
+  pumpEnabled = enabled;
+  digitalWrite(PUMP_RELAY_PIN, enabled == PUMP_RELAY_ACTIVE_HIGH ? HIGH : LOW);
+}
+
 void updateNightMode(int raw) {
   if (nightMode) {
     if (raw > LIGHT_NIGHT_TH + LIGHT_HYST) {
@@ -355,6 +367,8 @@ void setup() {
   analogSetPinAttenuation(SOIL_PIN, ADC_11db);
   analogSetPinAttenuation(LIGHT_PIN, ADC_11db);
   pinMode(TOUCH_PIN, INPUT);
+  digitalWrite(PUMP_RELAY_PIN, PUMP_RELAY_ACTIVE_HIGH ? LOW : HIGH);
+  pinMode(PUMP_RELAY_PIN, OUTPUT);
 
   Display.SetRotate(0);
   Display.Init(LCD_CS, LCD_DC, LCD_RST, LCD_BL);
@@ -381,6 +395,7 @@ void loop() {
     const int touch = digitalRead(TOUCH_PIN);
 
     updateSoilMode(stableSoil);
+    setPumpEnabled(soilMode == SOIL_DRY);
     updateNightMode(rawLight);
     handleTouch(touch);
     if (!touchLocked || nightMode) {
@@ -401,6 +416,8 @@ void loop() {
     Serial.print(stableSoil);
     Serial.print(" soilMode=");
     Serial.print(soilMode == SOIL_DRY ? "DRY" : (soilMode == SOIL_WET ? "WET" : "NORMAL"));
+    Serial.print(" pump=");
+    Serial.print(pumpEnabled ? "ON" : "OFF");
     Serial.print(" light=");
     Serial.print(rawLight);
     Serial.print(" mode=");
